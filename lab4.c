@@ -11,60 +11,100 @@ int* readFile(int* sampleCount,int* sampleMax,char* filename);
 double* offsetFile(int* sampleCount,int* sampleArray, double offset);
 double* scaleFile(int* sampleCount,int* sampleArray, double scale);
 void printArray(int Count,double* Array);
+void outputFile(int count, double value, double* data, char* outputFile);
 //}
 
 int main()
 {
-	int Count, Max;
-	char* filename=malloc(15*sizeof(char));
+	//gets choice between 1 and 99 from user
+		int inputFile=-1;
+		while(inputFile<0 || inputFile>99)
+		{
+			printf("\nChoose data file 0-99: ");
+			scanf("%d",&inputFile);
+		}
 	
-	#if (INFILE==0)
-		; 
-	#elif (INFILE!=0)
-		="data_00.txt";
-	#endif
-	
-	#if (INFILE==0)
-	int inputFile=-1;
-	while(inputFile<0 || inputFile>99)
-	{
-		printf("\nChoose data file 0-99: ");
-		scanf("%d",&inputFile);
-	}
-	
-	if(inputFile<10)
-		sprintf(filename,"Raw_data_0%d.txt",inputFile);
-	else
-		sprintf(filename,"Raw_data_%d.txt",inputFile);
-	#endif
-	
-	int* Array;
-	Array=readFile(&Count,&Max,filename);
-	if (Array==NULL)
-	{
-		printf("%s could not be accessed\n",filename);
-		return 1;
-	}
-	
-	#if (PRINTF>1)
-	printf("%d ",Count);
-	printf("%d\n",Max);
-	#endif
+	//creates string of filename user selects
+		char* filename=malloc(15*sizeof(char));
+		if(inputFile<10)
+			sprintf(filename,"Raw_data_0%d.txt",inputFile);
+		else
+			sprintf(filename,"Raw_data_%d.txt",inputFile);
 
-	double* offset=offsetFile(&Count,Array,OFFSET);
-	double* scale=scaleFile(&Count,Array,SCALE);
+	//reads data and store integers in array
+		int Count, Max;
+		int* Array=readFile(&Count,&Max,filename);
 	
-	//printArray(Count,(double*)Array);
-	//printf("\n\n");
-    printArray(Count,offset);
-    printf("\n");
-    printArray(Count,scale);
-    printf("\n");
-    
-    free(Array);
-    free(offset);
-    free(scale);
-	return 0;
+	//ends program if input file invalid
+		if (Array==NULL)
+		{
+			printf("%s could not be accessed\n",filename);
+			free(filename);
+			return 1;
+		}
+
+	//get selection for offset or scale
+		int choice=0;
+		while(choice!=1 && choice !=2)
+		{
+			printf("\n1)Offset Data\n2)Scale Data\nChoose option: ");
+			scanf("%d",&choice);
+		}
+	
+	//same amount of space for both scaled and offset
+		char* outFile=malloc(18*sizeof(char));
+	
+	if(choice==1)
+	//operations for offsetting data
+	{
+		//receive offset value
+		
+			double value;
+			printf("\nOffset value: ");
+			scanf("%lf",&value);
+		
+		//creates string of output file name user selected
+			double* offset=offsetFile(&Count,Array,value);		
+			if(inputFile<10)
+				sprintf(outFile,"Offset_data_0%d.txt",inputFile);
+			else
+				sprintf(outFile,"Offset_data_%d.txt",inputFile);
+
+		//print offsetted data to output file
+			outputFile(Count,value,offset,outFile);
+		
+		//free memory allocated
+			free(offset);
+	}
+	else
+	//operations for scaling data
+	{
+		//receive scaling value
+		
+			double value;
+			printf("\nScale value: ");
+			scanf("%lf",&value);
+		
+		//creates string of output file name user selected
+			double* scale=scaleFile(&Count,Array,value);
+			if(inputFile<10)
+				sprintf(outFile,"Scaled_data_0%d.txt",inputFile);
+			else
+				sprintf(outFile,"Scaled_data_%d.txt",inputFile);
+		
+		//print scaled data to output file
+			outputFile(Count,value,scale,outFile);
+		//free memory allocated
+			free(scale);
+	}
+
+	//free allocated memory
+		free(outFile);
+		free(filename);
+		free(Array);
+      
+	//end succesfully 
+		return 0;
 }
 //functions for files.c
 //{
@@ -170,5 +210,28 @@ void printArray(int Count,double* Array)
 		x++;
 		Count--;
 	}
+}
+
+void outputFile(int count, double value, double* data, char* outputFile)
+/*	input:	amount of data
+			value(offset or scale) to be put in file
+			double array to be printed
+			name of file to output to*/
+{
+	FILE *write;
+	
+	write=fopen(outputFile,"w");
+
+	fprintf(write,"%d %f\n",count, value);
+	
+	int x=0;
+	while(count>0)
+	{
+		fprintf(write,"%.4f\n",*(data+x));
+		x++;
+		count--;
+	}
+	
+	fclose(write);
 }
 //}
