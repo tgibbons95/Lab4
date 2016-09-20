@@ -16,7 +16,7 @@ void printArray(int Count,double* Array);
 int main()
 {
 	int Count, Max;
-	char* filename=malloc(11*sizeof(char));
+	char* filename=malloc(15*sizeof(char));
 	
 	#if (INFILE==0)
 		; 
@@ -33,9 +33,9 @@ int main()
 	}
 	
 	if(inputFile<10)
-		sprintf(filename,"data_0%d.txt",inputFile);
+		sprintf(filename,"Raw_data_0%d.txt",inputFile);
 	else
-		sprintf(filename,"data_%d.txt",inputFile);
+		sprintf(filename,"Raw_data_%d.txt",inputFile);
 	#endif
 	
 	int* Array;
