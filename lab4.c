@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define PRINTF 0
+#define INFILE 0
 #define OFFSET 1.8
-#define SCALE 0.5
+#define SCALE 1.3
 
 //prototypes for files.h
 //{
@@ -15,25 +16,55 @@ void printArray(int Count,double* Array);
 int main()
 {
 	int Count, Max;
-	char* filename="data_00.txt";
-
+	char* filename=malloc(11*sizeof(char));
+	
+	#if (INFILE==0)
+		; 
+	#elif (INFILE!=0)
+		="data_00.txt";
+	#endif
+	
+	#if (INFILE==0)
+	int inputFile=-1;
+	while(inputFile<0 || inputFile>99)
+	{
+		printf("\nChoose data file 0-99: ");
+		scanf("%d",&inputFile);
+	}
+	
+	if(inputFile<10)
+		sprintf(filename,"data_0%d.txt",inputFile);
+	else
+		sprintf(filename,"data_%d.txt",inputFile);
+	#endif
+	
 	int* Array;
 	Array=readFile(&Count,&Max,filename);
+	if (Array==NULL)
+	{
+		printf("%s could not be accessed\n",filename);
+		return 1;
+	}
 	
 	#if (PRINTF>1)
 	printf("%d ",Count);
 	printf("%d\n",Max);
 	#endif
 
+	double* offset=offsetFile(&Count,Array,OFFSET);
+	double* scale=scaleFile(&Count,Array,SCALE);
+	
 	//printArray(Count,(double*)Array);
 	//printf("\n\n");
-    printArray(Count,offsetFile(&Count,Array,OFFSET));
+    printArray(Count,offset);
     printf("\n");
-    printArray(Count,scaleFile(&Count,Array,SCALE));
+    printArray(Count,scale);
     printf("\n");
     
+    free(Array);
+    free(offset);
+    free(scale);
 	return 0;
-	clear(Array);
 }
 //functions for files.c
 //{
