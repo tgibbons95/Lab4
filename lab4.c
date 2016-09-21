@@ -19,41 +19,46 @@ int maxValue(int* data, int count);
 //}
 int main()
 {
-	//gets choice between 1 and 99 from user
+	//get choice between 1 and 99 from user
+	//{
 		int inputFile=-1;
 		while(inputFile<0 || inputFile>99)
 		{
 			printf("\nChoose data file 0-99: ");
 			scanf("%d",&inputFile);
 		}
-	
+	//}
 	//creates string of filename user selects
+	//{
 		char* filename=malloc(15*sizeof(char));
 		if(inputFile<10)
 			sprintf(filename,"Raw_data_0%d.txt",inputFile);
 		else
 			sprintf(filename,"Raw_data_%d.txt",inputFile);
-
-	//reads data and store integers in array
+	//}
+	//read data and store integers in array
+	//{
 		int Count, Max;
 		int* Array=readFile(&Count,&Max,filename);
-	
+	//}
 	//ends program if input file invalid
+	//{
 		if (Array==NULL)
 		{
 			printf("%s could not be accessed\n",filename);
 			free(filename);
 			return 1;
 		}
-
+	//}
 	//get selection for offset or scale
+	//{
 		int choice=0;
 		while(choice!=1 && choice !=2)
 		{
 			printf("\n1)Offset Data\n2)Scale Data\nChoose option: ");
 			scanf("%d",&choice);
 		}
-	
+	//}
 	//same amount of space for both scaled and offset
 		char* outFile=malloc(18*sizeof(char));
 	
@@ -99,21 +104,20 @@ int main()
 			free(scale);
 	}
 
-	//stats
+	//stats data output
+	//{
 		int maxData=maxValue(Array,Count);
 		double ave=mean(Array,Count);
-	
-	//stats output file name
 		char* statFile=malloc(22*sizeof(char));
 		if(inputFile<10)
 			sprintf(statFile,"Statistics_data_0%d.txt",inputFile);
 		else
 			sprintf(statFile,"Statistics_data_%d.txt",inputFile);
 		
-	//output stats
 		outputFile(ave,maxData,NULL,statFile);
-	
+	//}
 	//centered data output
+	//{
 		double* centered=offsetFile(&Count,Array,ave*-1);
 		char* centeredFile=malloc(20*sizeof(char));
 		if(inputFile<10)
@@ -122,8 +126,9 @@ int main()
 			sprintf(centeredFile,"Centered_data_%d.txt",inputFile);
 	
 		outputFile(Count,ave*-1,centered,centeredFile);
-	
+	//}
 	//normalized data output
+	//{
 		double* normalized=scaleFile(&Count,Array,1.0/Max);
 		char* normalizedFile=malloc(22*sizeof(char));
 		if(inputFile<10)
@@ -132,8 +137,9 @@ int main()
 			sprintf(normalizedFile,"Normalized_data_%d.txt",inputFile);
 	
 		outputFile(Count,1.0/Max,normalized,normalizedFile);
-	
+	//}
 	//free allocated memory
+	//{
 		free(centered);
 		free(centeredFile);
 		free(normalized);
@@ -142,7 +148,7 @@ int main()
 		free(outFile);
 		free(filename);
 		free(Array);
-      
+    //} 
 	//end succesfully
 		printf("\n");
 		return 0;
