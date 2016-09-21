@@ -143,7 +143,8 @@ int main()
 		free(filename);
 		free(Array);
       
-	//end succesfully 
+	//end succesfully
+		printf("\n");
 		return 0;
 }
 //functions for files.c
