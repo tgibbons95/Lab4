@@ -9,7 +9,7 @@ int* readFile(int* sampleCount,int* sampleMax,char* filename);
 double* offsetFile(int* sampleCount,int* sampleArray, double offset);
 double* scaleFile(int* sampleCount,int* sampleArray, double scale);
 void printArray(int Count,double* Array);
-void outputFile(int count, double value, double* data, char* outputFile);
+void outputFile(double count, double value, double* data, char* outputFile);
 //}
 
 //prototypes for calculations.h
@@ -99,11 +99,46 @@ int main()
 			free(scale);
 	}
 
-	//print data
-		printf("\nMax Value is %d",maxValue(Array,Count));
-		printf("\nMean is %lf",mean(Array,Count));
+	//stats
+		int maxData=maxValue(Array,Count);
+		double ave=mean(Array,Count);
+	
+	//stats output file name
+		char* statFile=malloc(22*sizeof(char));
+		if(inputFile<10)
+			sprintf(statFile,"Statistics_data_0%d.txt",inputFile);
+		else
+			sprintf(statFile,"Statistics_data_%d.txt",inputFile);
+		
+	//output stats
+		outputFile(ave,maxData,NULL,statFile);
+	
+	//centered data output
+		double* centered=offsetFile(&Count,Array,ave*-1);
+		char* centeredFile=malloc(20*sizeof(char));
+		if(inputFile<10)
+			sprintf(centeredFile,"Centered_data_0%d.txt",inputFile);
+		else
+			sprintf(centeredFile,"Centered_data_%d.txt",inputFile);
+	
+		outputFile(Count,ave*-1,centered,centeredFile);
+	
+	//normalized data output
+		double* normalized=scaleFile(&Count,Array,1.0/Max);
+		char* normalizedFile=malloc(22*sizeof(char));
+		if(inputFile<10)
+			sprintf(normalizedFile,"Normalized_data_0%d.txt",inputFile);
+		else
+			sprintf(normalizedFile,"Normalized_data_%d.txt",inputFile);
+	
+		outputFile(Count,1.0/Max,normalized,normalizedFile);
 	
 	//free allocated memory
+		free(centered);
+		free(centeredFile);
+		free(normalized);
+		free(normalizedFile);
+		free(statFile);
 		free(outFile);
 		free(filename);
 		free(Array);
@@ -217,7 +252,7 @@ void printArray(int Count,double* Array)
 	}
 }
 
-void outputFile(int count, double value, double* data, char* outputFile)
+void outputFile(double count, double value, double* data, char* outputFile)
 /*	input:	amount of data
 			value(offset or scale) to be put in file
 			double array to be printed
@@ -227,17 +262,20 @@ void outputFile(int count, double value, double* data, char* outputFile)
 	
 	write=fopen(outputFile,"w");
 
-	fprintf(write,"%d %f\n",count, value);
+	fprintf(write,"%lf %lf\n",count, value);
 	
 	int x=0;
-	while(count>0)
-	{
-		fprintf(write,"%.4f\n",*(data+x));
-		x++;
-		count--;
-	}
-	
+	if(data!=NULL)
+		while(count>0)
+		{
+			fprintf(write,"%.4f\n",*(data+x));
+			x++;
+			count--;
+		}
+
 	fclose(write);
+	
+	printf("\n%s is loaded",outputFile);
 }
 //}
 
