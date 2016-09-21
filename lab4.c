@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #define PRINTF 0
-#define INFILE 0
-#define OFFSET 1.8
-#define SCALE 1.3
 
 //prototypes for files.h
 //{
@@ -14,6 +12,11 @@ void printArray(int Count,double* Array);
 void outputFile(int count, double value, double* data, char* outputFile);
 //}
 
+//prototypes for calculations.h
+//{
+double mean(int* data,int count);
+int maxValue(int* data, int count);
+//}
 int main()
 {
 	//gets choice between 1 and 99 from user
@@ -58,7 +61,6 @@ int main()
 	//operations for offsetting data
 	{
 		//receive offset value
-		
 			double value;
 			printf("\nOffset value: ");
 			scanf("%lf",&value);
@@ -80,7 +82,6 @@ int main()
 	//operations for scaling data
 	{
 		//receive scaling value
-		
 			double value;
 			printf("\nScale value: ");
 			scanf("%lf",&value);
@@ -98,6 +99,10 @@ int main()
 			free(scale);
 	}
 
+	//print data
+		printf("\nMax Value is %d",maxValue(Array,Count));
+		printf("\nMean is %lf",mean(Array,Count));
+	
 	//free allocated memory
 		free(outFile);
 		free(filename);
@@ -234,4 +239,42 @@ void outputFile(int count, double value, double* data, char* outputFile)
 	
 	fclose(write);
 }
+//}
+
+//functions for calculations.c
+//{
+double mean(int* data, int count)
+/*	input:	integer array
+			number of integers in array
+	output:	average of integers*/
+{
+	int total=0;
+	int tempCount=count;
+	
+	while(tempCount>0)
+	{
+		total+=*(data+count-tempCount);
+		tempCount--;
+	}
+	
+	return (double) total/count;
+}
+
+int maxValue(int* data,int count)
+/*	input:	integer array
+			number of integers in array
+	output: maximum value in array*/
+{
+	int tempCount=count;
+	int maxValue=INT_MIN;
+	while(tempCount>0)
+	{
+		maxValue=(maxValue>*(data+count-tempCount))? maxValue:*(data+count-tempCount);
+		tempCount--;
+	}
+	
+	return maxValue;
+}
+
+
 //}
