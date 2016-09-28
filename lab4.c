@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #define PRINTF 0
+//Thomas Gibbons
 
 //prototypes for files.h
 //{
@@ -164,44 +165,22 @@ int* readFile(int* sampleCount,int* sampleMax,char* filename)
 	FILE *fp;
 	fp=fopen(filename,"r");
 
-	#if (PRINTF>1)
-	printf("1 ");
-	#endif
-
 	if(fp==NULL)
 	    return NULL;
 
-    #if (PRINTF>1)
-	printf("2 ");
-	#endif
-
 	fscanf(fp,"%d %d",sampleCount,sampleMax);
 	int count=*(sampleCount);
-
-	#if (PRINTF>1)
-	printf("3 ");
-	#endif
 
 	int* sampleArray;
 	sampleArray=malloc(sizeof(int)*count);
 	int x=0;
 
-	#if (PRINTF>1)
-	printf("4 ");
-	#endif
-
 	while(count>0)
 	{
 		fscanf(fp,"%d", sampleArray+x);
-			#if (PRINTF>1)
-			printf("%d ",*(sampleArray+x));
-			#endif
 		x++;
 		count--;
 	}
-	#if (PRINTF>1)
-	printf("5\n");
-	#endif
 
 	fclose(fp);
 	return sampleArray;
